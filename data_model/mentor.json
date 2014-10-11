@@ -1,0 +1,16 @@
+{
+	linkedInURL: ,
+	interests: ["ecommerce", "real estate", ...],
+	contact: {
+		firstname: ,
+		lastname: ,
+		email: ,
+		phone: ,
+		addr:
+	}
+	rate: {
+		numberOfRating: ,
+		rating:
+	}
+	topicInvitations: [topic_id, ...]
+}

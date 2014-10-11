@@ -1,0 +1,11 @@
+{
+	linkedInURL: ,
+	contact: {
+		firstname: ,
+		lastname: ,
+		email: ,
+		phone: ,
+		addr:
+	}
+	topics: [topic_id, ...]
+}

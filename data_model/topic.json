@@ -1,0 +1,16 @@
+{
+	_id: 
+	topic:,
+	date:,
+	tags: [
+		{
+			tag: ,
+			memtor: ,
+			matched: pending/accepted/rejected
+		},
+		{
+
+		}
+	],
+	status: active/cancel
+}
