@@ -2,7 +2,7 @@ var http = require("https");
 var express = require('express');
 var router = express.Router();
 var mongoose = require("mongoose");
-var Linkedin = require('node-linkedin')('75rr9d5pcxbxe7', 't7lladYvHYHlbgHh', 'http://localhost:3000/oauth/linkedin/callback');
+var Linkedin = require('node-linkedin')('75rr9d5pcxbxe7', 't7lladYvHYHlbgHh', 'http://www.founderbutterfly.com:3000/oauth/linkedin/callback');
 var linkedin = Linkedin.init('my_access_token', {
     timeout: 10000 /* 10 seconds */
 });
@@ -63,18 +63,13 @@ function fetch(code,callback){
          "x-li-format" : "json"
     	}
 	}
-	console.log("in fetch");
 	http.request(option, function(res){
-		console.log("in request");
 		res.on('data', function(chunk){
-			console.log("got data");
 			callback(chunk);
-		}).on('error',function(e){
-		   console.log("Error: " + hostNames[i] + "\n" + e.message); 
-		   console.log( e.stack );
-		});	
+		});
 	}).end();
 };
+
 // function isExist(uid, callback){
 // 	if(uid){
 // 		update(get(uid))
