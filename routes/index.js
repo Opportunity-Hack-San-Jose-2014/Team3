@@ -17,7 +17,20 @@ router.get('/', function (req, res) {
 });
 
 router.get('/dashboard', function (req, res) {
-    res.render('dashboard');
+    //res.render('dashboard');
+
+    req.session.userType = "mentee";
+    // console.log("1111"+req.session.user.userId);
+//    api.findMentee(req.session.user.userId,function(err, mentee){
+//        res.render('mentor', {mentee : mentee});
+//    });
+
+    api.getMentee(req.session.userId, function(err, user){
+        if(err)
+            console.log(err);
+        // res.send(user);
+        res.render('dashboard', {user:user});
+    });
 });
 
 router.get('/plan-mentor/:id', function (req, res) {
