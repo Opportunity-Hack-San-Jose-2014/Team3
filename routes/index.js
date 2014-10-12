@@ -2,7 +2,8 @@ var http = require("https");
 var express = require('express');
 var router = express.Router();
 
-var Linkedin = require('node-linkedin')('75rr9d5pcxbxe7', 't7lladYvHYHlbgHh', 'http://www.founderbutterfly.com:3000/oauth/linkedin/callback');
+var mongoose = require("mongoose");
+var Linkedin = require('node-linkedin')('75rr9d5pcxbxe7', 't7lladYvHYHlbgHh', 'http://founderbutterfly.com:3000/oauth/linkedin/callback');
 
 var linkedin = Linkedin.init('my_access_token', {
     timeout: 10000 /* 10 seconds */
@@ -20,6 +21,14 @@ router.get('/dashboard', function (req, res) {
     res.render('dashboard');
 });
 
+router.get('/plan', function(req, res) {
+    req.session.userType = "mentee";
+    res.render('business-plan');
+});
+router.get('/mentor', function(req, res) {
+    req.session.userType = "mentor";
+    res.render('business-plan');
+});
 
 // router.get('/login', function(req, res) {
   
@@ -43,44 +52,103 @@ router.get('/oauth/linkedin/callback', function(req, res) {
         if ( err )
             return console.error(err);
         var results = JSON.parse(results);
-         //console.log("3"+results.access_token);
 
         req.session.linkdinAccessCode = results.access_token;
-        //fetch(results.access_token);
         fetch(results.access_token, function(chunk){
 
-        	res.send(JSON.stringify(JSON.parse(chunk)));
+            var linkedinUser = JSON.parse(chunk);
+            isExist(req.session.userType,linkedinUser,function(result){
+                //res.redirect('/');
+                if(req.session.userType=="mentor"){
+                    res.redirect('/mentor');
+                }
+                else{
+                    res.redirect("/dashboard");
+                }
+            });
         });
-        //res.redirect('/');
+        
     });
 });
 
 function fetch(code,callback){
-	
-	var option = {
-		host:"api.linkedin.com",
-		port: 443,
-		path: "/v1/people/~:(id,first-name,headline,last-name,industry,skills)",
-		method: "get",
-		headers: {
+    
+    var option = {
+        host:"api.linkedin.com",
+        port: 443,
+        path: "/v1/people/~:(id,first-name,headline,last-name,industry,skills,picture-url,public-profile-url)",
+        method: "get",
+        headers: {
         'Authorization': 'Bearer '+code,
          "x-li-format" : "json"
-    	}
-	}
-	http.request(option, function(res){
-		res.on('data', function(chunk){
-			callback(chunk);
-		});
-	}).end();
+        }
+    }
+    http.request(option, function(res){
+        res.on('data', function(chunk){
+            callback(chunk);
+        });
+    }).end();
 };
 
-// function isExist(uid, callback){
-// 	if(uid){
-// 		update(get(uid))
-// 	}else{
-// 		insert(uid);
-// 	}
-// 	callback();
-// };
+function isExist(userType,linkedinUser, callback){
+    if(userType=="mentor")
+    {
+        console.log("find mentor");
+        api.findMentor(linkedinUser.id, function(err,result){
+            // user existed, update
+            if(result){
+                console.log("Update user: "+linkedinUser.firstName +"id: "+linkedinUser.id);
+                api.updateMentor(linkedinUser, function(err,result){
+                    if(err){
+                        console.og("update failed");
+                    }
+                    else
+                        console.log(result);
+                    callback(err,result);
+                });
+            }else{
+                // add new user
+                console.log("Insert new user: "+linkedinUser.firstName +"id: "+linkedinUser.id);
+                api.addMentor(linkedinUser,function(err,result){
+                    if (err) {
+                        console.log("add failed");
+                    }
+                    else
+                        console.log(result);
+                    callback(err,result);
+                });
+            }
+        });      
+    }
+    else{
+        console.log("find mentee");
+        api.findMentee(linkedinUser.id, function(err,result){
+            // user existed, update
+            if(result){
+                console.log("Update user: "+linkedinUser.firstName +"id: "+linkedinUser.id);
+                api.updateMentee(linkedinUser, function(err,result){
+                    if(err){
+                        console.og("update failed");
+                    }
+                    else
+                        console.log(result);
+                    callback(err,result);
+                });
+            }else{
+                // add new user
+                console.log("Insert new user: "+linkedinUser.firstName +"id: "+linkedinUser.id);
+                api.addMentee(linkedinUser,function(err,result){
+                    if (err) {
+                        console.log("add failed");
+                    }
+                    else
+                        console.log(result);
+                    callback(err,result);
+                });
+            }
+        });         
+    }
+
+};
 
 module.exports = router;
