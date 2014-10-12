@@ -14,7 +14,7 @@ router.get('/', function(req, res) {
   }
 });
 
-router.get('/start', function(req, res) {
+router.get('/plan', function(req, res) {
   res.render('business-plan');
 });
 
