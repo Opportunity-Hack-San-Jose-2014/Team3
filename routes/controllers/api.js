@@ -35,9 +35,9 @@ exports.addMentor = function(jsondata, callback){
         headline: jsondata.headline,
         industry: jsondata.industry,
         skills: skills
-    }).save(function(err){
+    }).save(function(err, mentor){
             if (err) callback(err);
-            else callback(null, "Mentor saved");
+            else callback(null, mentor._id);
         });
 }
 
@@ -50,9 +50,9 @@ exports.addMentee = function(jsondata, callback){
         lastName: jsondata.lastName,
         headline: jsondata.headline,
         industry: jsondata.industry
-    }).save(function(err){
+    }).save(function(err, mentee){
             if (err) callback(err);
-            else callback(null, "Mentee saved");
+            else callback(null, mentee._id);
         });
 }
 
@@ -94,7 +94,7 @@ exports.addPlan = function(jsondata, callback){
 
             ], function(err){
                 if (err) callback(err);
-                else callback(null, "Plan saved");
+                else callback(null, plan._id);
             })
         });
 }
@@ -129,7 +129,7 @@ exports.updateMentor = function(jsondata, callback){
             skills: skills
         }}, function(err){
             if (err) callback(err);
-            else callback(null, "Mentor updated");
+            else callback(null, item._id);
         })
     });
 }
@@ -148,7 +148,7 @@ exports.updateMentee = function(jsondata, callback){
             industry: jsondata.industry
         }}, function(err){
             if (err) callback(err);
-            else callback(null, "Mentee updated");
+            else callback(null, item._id);
         })
     });
 }
@@ -255,7 +255,9 @@ exports.matchSkills = function(skills, n, callback){
             scores.sort(this.compareScore)
 //            console.log(scores)
 
-            callback(null, scores.slice(0,n).map(function(score){
+            callback(null, scores.slice(0,n).filter(function(score){
+                return score[1] > 0
+            }).map(function(score){
                 return score[0]
             }))
         })
@@ -283,7 +285,7 @@ function matchScore(skills1, skills2) {
     }).length;
 }
 
-// [[id, score],[id,score]..]
+// [[id, score],[id, score]..]
 exports.compareScore = function(score1, score2) {
     if (score1[1] < score2[1])
         return 1;
