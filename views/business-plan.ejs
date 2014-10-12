@@ -72,7 +72,7 @@
 </nav>
 
 <!-- Header -->
-<header dis>
+<header>
     <div class="container" style="display: none">
         <div class="row">
             <div class="col-lg-12">
@@ -153,6 +153,8 @@
 <div class="row">
 <div class="well main col-lg-3">
 
+    <%if (userId === undefined) { %>
+
     <h5>Please Log In, or <a href="#">Sign Up</a></h5>
 
     <div class="row">
@@ -179,6 +181,10 @@
             Log In
         </button>
     </form>
+
+    <% } else {%>
+    UserId: <%=userId%>
+    <%}%>
 
 </div>
 <div class="col-lg-8 col-lg-offset-1">

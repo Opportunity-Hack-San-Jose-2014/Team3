@@ -57,7 +57,8 @@ router.get('/plan-mentor', function (req, res) {
 
 router.get('/plan', function (req, res) {
     req.session.userType = "mentee";
-    res.render('business-plan');
+    console.log("userid: " + req.session.userId);
+    res.render('business-plan', {userId: req.session.userId});
 });
 
 router.post('/plan', function (req, res) {
@@ -116,6 +117,7 @@ router.get('/oauth/linkedin/callback', function (req, res) {
         fetchProfile(results.access_token, function(chunk){
             var linkedinUser = JSON.parse(chunk);
             req.session.userId = linkedinUser.id;
+
             console.log(req.session.userId);
             isExist(req.session.userType, linkedinUser, function (result) {
                 //res.redirect('/');
