@@ -1,7 +1,7 @@
 var http = require("https");
 var express = require('express');
 var router = express.Router();
-
+var async = require('async')
 var Linkedin = require('node-linkedin')('75rr9d5pcxbxe7', 't7lladYvHYHlbgHh', 'http://founderbutterfly.com:3000/oauth/linkedin/callback');
 
 var linkedin = Linkedin.init('my_access_token', {
@@ -21,7 +21,38 @@ router.get('/dashboard', function (req, res) {
 });
 
 router.get('/plan-mentor', function (req, res) {
-    res.render('plan-mentor');
+    //var ids=["zFQRactjFi","IyT2spp3n9"];
+    var skills = ["php","java","python"];
+    api.matchSkills(skills,20,function(error,mentors){
+        console.log("Mentors number: "+mentors.length);
+        
+        async.map(mentors, function(id, callback)
+        {
+            fetchSharedConnections(id,req.session.linkdinAccessCode, function(id,str){
+                var sharedConnections = JSON.parse(str);
+                console.log("RAW: "+JSON.stringify(sharedConnections));
+                if(sharedConnections.status == null && JSON.stringify(sharedConnections.relationToViewer) != "{}")
+                {
+                    var numOfConnections = sharedConnections.relationToViewer.connections._total;
+                    console.log("Shared: "+numOfConnections);
+                    console.log("ID: "+id);
+                    callback(null, [id, numOfConnections]);
+                }
+                else
+                {
+                    callback(null, [id, 0]);
+                }
+
+        })}, function(err, results){
+            if (err) console.log(err)
+            console.log("All: "+JSON.stringify(results));
+            results.sort(api.compareScore);
+            console.log(results);
+            res.render('plan-mentor');
+
+            })
+        });
+    
 });
 
 router.get('/plan', function(req, res) {
@@ -58,8 +89,8 @@ router.get('/oauth/linkedin/callback', function(req, res) {
         var results = JSON.parse(results);
 
         req.session.linkdinAccessCode = results.access_token;
-        fetch(results.access_token, function(chunk){
 
+        fetchProfile(results.access_token, function(chunk){
             var linkedinUser = JSON.parse(chunk);
             isExist(req.session.userType,linkedinUser,function(result){
                 //res.redirect('/');
@@ -69,13 +100,15 @@ router.get('/oauth/linkedin/callback', function(req, res) {
                 else{
                     res.redirect("/dashboard");
                 }
+                //linkedinID will be returned on update and create
+                req.session.userId = result;
             });
         });
-        
+
     });
 });
 
-function fetch(code,callback){
+function fetchProfile(code,callback){
     
     var option = {
         host:"api.linkedin.com",
@@ -88,11 +121,38 @@ function fetch(code,callback){
         }
     }
     http.request(option, function(res){
+        var str = '';
         res.on('data', function(chunk){
-            callback(chunk);
+            str += chunk;
+        });
+        res.on('end',function(){
+            callback(str);
         });
     }).end();
 };
+
+function fetchSharedConnections(id,code,callback){
+       var option = {
+        host:"api.linkedin.com",
+        port: 443,
+        path: "/v1/people/"+id+":(id,first-name,last-name,relation-to-viewer:(connections))",
+        method: "get",
+        headers: {
+        'Authorization': 'Bearer '+code,
+         "x-li-format" : "json"
+        }
+    }
+    http.request(option, function(res){
+        var str = '';
+        res.on('data', function(chunk){
+            str += chunk;
+        });
+        res.on('end',function(){
+            console.log("sharedConnections retrieved for:"+id);
+            callback(id,str);
+        });
+    }).end();
+}
 
 function isExist(userType,linkedinUser, callback){
     if(userType=="mentor")
