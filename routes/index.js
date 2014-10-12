@@ -1,17 +1,29 @@
 var http = require("https");
 var express = require('express');
 var router = express.Router();
+
 var mongoose = require("mongoose");
 var Linkedin = require('node-linkedin')('75rr9d5pcxbxe7', 't7lladYvHYHlbgHh', 'http://www.founderbutterfly.com:3000/oauth/linkedin/callback');
+
 var linkedin = Linkedin.init('my_access_token', {
     timeout: 10000 /* 10 seconds */
 });
-//mongoose.connect('mongodb://localhost/spartanfly');
+
+var api = require('./controllers/api.js');
 
 /* GET home page. */
 router.get('/', function(req, res) {
   res.render('index', { title: '11'});
 });
+
+router.post('/mentor', api.addMentor);
+router.post('/mentee', api.addMentee);
+router.post('/topic', api.addTopic);
+router.post('/mentor/:id', api.updateMentor);
+router.post('/mentee/:id', api.updateMentee);
+router.get('/mentor/:id', api.getMentor);
+router.get('/mentee/:id', api.getMentee);
+router.get('/topic/:id', api.getTopic);
 
 router.get('/plan', function(req, res) {
   res.render('business-plan');
