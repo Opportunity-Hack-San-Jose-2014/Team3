@@ -306,7 +306,7 @@
 
 </div>
 <div class="col-lg-8 col-lg-offset-1">
-    <form class="form-horizontal" role="form" id="frmPlanStep1" action="plan" method="post">
+    <form class="form-horizontal" role="form" id="frmPlanStep1" action="/plan" method="post">
         <fieldset>
 
             <!-- Form Name -->
@@ -716,27 +716,27 @@
 
 <script>
     $(function(){
-        $("#frmPlanStep1").submit(function() {
+//        $("#frmPlanStep1").submit(function() {
+//
+//            $.ajax({
+//                type: "POST",
+//                url: "plan",
+//                data: $("#frmPlanStep1").serialize(), // serializes the form's elements.
+//                success: function(data)
+//                {
+//                    if(data == '-1'){
+//                        alert("please login first");
+//                        return false;
+//                    }
+//                    //return true;
+//                    window.location = "/plan-mentor/"+data;
+//
+//
+//                }
+//            });
 
-            $.ajax({
-                type: "POST",
-                url: "plan",
-                data: $("#frmPlanStep1").serialize(), // serializes the form's elements.
-                success: function(data)
-                {
-                    if(data == '-1'){
-                        alert("please login first");
-                        return false;
-                    }
-
-                    window.location = "/plan-mentor";
-
-                    
-                }
-            });
-
-            return false; // avoid to execute the actual submit of the form.
-        });
+//            return false; // avoid to execute the actual submit of the form.
+//        });
     });
 </script>
 

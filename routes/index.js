@@ -20,13 +20,13 @@ router.get('/dashboard', function (req, res) {
     res.render('dashboard');
 });
 
-router.get('/plan-mentor', function (req, res) {
+router.get('/plan-mentor/:id', function (req, res) {
     //var ids=["zFQRactjFi","IyT2spp3n9"];
     var skills = [
         ["legal", "law", "laywer", "international"],
-        ["bank","banking", "invest", "investment"],
+        ["bank","banking", "invest", "investment", "money","FINANCIAL", "FINANCe"],
         ["adv", "advertising", "advertisement"],
-        ["php", "java", "Hadoop"]
+        ["php", "java", "Hadoop", "python", "ios","ruby"]
     ];
     //            res.render('plan-mentor', {mentors: [{name: 'Lan Xu', industry: 'it', skills: ['Java','PHP'] }, {name: 'Json Yi', industry: 'it', skills: ['Java','PHP'] },{name: 'Frank Feng', industry: 'it', skills: ['Java','PHP'] }]} );
 
@@ -71,9 +71,11 @@ router.post('/plan', function (req, res) {
         domains: []
     };
 
-    api.addPlan(jsondata, function (err, planid) {
+    api.addPlan(jsondata, function (err, plan) {
         if (err) console.log(err)
-        res.render("plan-mentor", {planId : planid});
+        console.log(plan)
+        //res.render("plan-mentor", {planId : plan});
+        res.redirect("/plan-mentor/"+ plan._id);
     });
 });
 

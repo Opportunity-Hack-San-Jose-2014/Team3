@@ -72,7 +72,7 @@ exports.addPlan = function(jsondata, callback){
                 function(cb){
                     // update mentee plans
                     Mentee.findById(jsondata.creator, function(err, mentee){
-                        mentee.update({$push: {plans: plan.id}}, function(err){
+                        mentee.update({$push: {plans: plan._id}}, function(err){
                             if (err) cb(err);
                             else cb(null);
                         })
@@ -82,7 +82,7 @@ exports.addPlan = function(jsondata, callback){
                     // update mentor plan invited
                     async.each(jsondata.domains, function(dom, innercb){
                         Mentor.findById(dom.mentor, function(err, mentor){
-                            mentor.update({$push: {planInvitations: plan.id}}, function(err){
+                            mentor.update({$push: {planInvitations: plan._id}}, function(err){
                                 if (err) innercb(err);
                                 innercb(null);
                             })
@@ -94,7 +94,7 @@ exports.addPlan = function(jsondata, callback){
                 }
             ], function(err){
                 if (err) callback(err);
-                else callback(null, plan._id);
+                else callback(null, plan);
             })
         });
 }
