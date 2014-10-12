@@ -22,39 +22,23 @@ router.get('/dashboard', function (req, res) {
 
 router.get('/plan-mentor', function (req, res) {
     //var ids=["zFQRactjFi","IyT2spp3n9"];
-    var skills = ["php","java","python"];
-    api.matchSkills(skills,20,function(error, mentors){
-        console.log("Mentors number: "+mentors.length);
-        
-        async.map(mentors, function(mentor, callback)
-        {
-            fetchSharedConnections(mentor.id,req.session.linkdinAccessCode, function(id,str){
-                var sharedConnections = JSON.parse(str);
-                console.log("RAW: "+JSON.stringify(sharedConnections));
-                if(sharedConnections.status == null && JSON.stringify(sharedConnections.relationToViewer) != "{}")
-                {
-                    var numOfConnections = sharedConnections.relationToViewer.connections._total;
-                    console.log("Shared: "+numOfConnections);
-                    console.log("ID: "+id);
-                    callback(null, [mentor, numOfConnections]);
-                }
-                else
-                {
-                    callback(null, [mentor, 0]);
-                }
+    var skills = [
+        ["legal", "law", "laywer", "international"],
+        ["bank","banking", "invest", "investment"],
+        ["adv", "advertising", "advertisement"],
+        ["php", "java", "Hadoop"]
+    ];
+    //            res.render('plan-mentor', {mentors: [{name: 'Lan Xu', industry: 'it', skills: ['Java','PHP'] }, {name: 'Json Yi', industry: 'it', skills: ['Java','PHP'] },{name: 'Frank Feng', industry: 'it', skills: ['Java','PHP'] }]} );
 
-        })}, function(err, results){
-            if (err) console.log(err)
-            console.log("All: "+JSON.stringify(results));
-            results.sort(api.compareScore).map(function(result){
-                return result[0]
-            });
-            console.log(results);
-            res.render('plan-mentor');
 
-            })
-        });
-    
+    async.map(skills, function (skill, callback) {
+        getMentors(req, skill, function (json) {
+            callback(null,json);
+        })
+    }, function (err,jsons) {
+        res.render('plan-mentor', {mentors: jsons});
+    });
+    //;
 });
 
 router.get('/plan', function (req, res) {
@@ -67,7 +51,7 @@ router.post('/plan', function (req, res) {
     req.session.userType = "mentee";
     console.log("userid: " + req.session.userId);
 
-    if(req.session.userId === null) {
+    if (req.session.userId === null) {
         res.send('-1');
         return;
     }
@@ -91,7 +75,7 @@ router.get('/mentor', function (req, res) {
     res.render('mentor');
 });
 
-router.get('/diagram', function(req, res) {
+router.get('/diagram', function (req, res) {
     // req.session.userType = "mentor";
     // api.findMentor(req.session.userId, function());
     res.render('diagram');
@@ -122,13 +106,12 @@ router.get('/oauth/linkedin/callback', function (req, res) {
 
         req.session.linkdinAccessCode = results.access_token;
 
-        fetchProfile(results.access_token, function(chunk){
+        fetchProfile(results.access_token, function (chunk) {
             var linkedinUser = JSON.parse(chunk);
             req.session.userId = linkedinUser.id;
 
             console.log(req.session.userId);
             isExist(req.session.userType, linkedinUser, function (result) {
-                //res.redirect('/');
                 if (req.session.userType == "mentor") {
                     res.redirect('/mentor');
                 }
@@ -143,7 +126,42 @@ router.get('/oauth/linkedin/callback', function (req, res) {
     });
 });
 
-function fetchProfile(code,callback){
+function getMentors(req, skills, callback) {
+    api.matchSkills(skills, 20, function (error, mentors) {
+        console.log("Mentors number: " + mentors.length);
+
+        async.map(mentors, function (mentor, callback) {
+            fetchSharedConnections(mentor._id, req.session.linkdinAccessCode, function (id, str) {
+                var sharedConnections = JSON.parse(str);
+                console.log("RAW: " + JSON.stringify(sharedConnections));
+                if (sharedConnections.status == null && JSON.stringify(sharedConnections.relationToViewer) != "{}") {
+                    var numOfConnections = sharedConnections.relationToViewer.connections._total;
+                    console.log("Shared: " + numOfConnections);
+                    callback(null, [mentor, numOfConnections]);
+                }
+                else {
+                    callback(null, [mentor, 0]);
+                }
+
+            })
+        }, function (err, results) {
+            if (err) console.log(err)
+            console.log("All: " + JSON.stringify(results));
+            results.sort(api.compareScore).map(function (result) {
+                return result[0]
+            });
+
+            console.log(results);
+            var json = [];
+
+            for (var i = 0; i < results.length; i++) {
+                json.push(results[i][0]._doc);
+            }
+            callback(json);
+        })
+    });
+}
+function fetchProfile(code, callback) {
     var option = {
         host: "api.linkedin.com",
         port: 443,
@@ -154,43 +172,42 @@ function fetchProfile(code,callback){
             "x-li-format": "json"
         }
     }
-    http.request(option, function(res){
+    http.request(option, function (res) {
         var str = '';
-        res.on('data', function(chunk){
+        res.on('data', function (chunk) {
             str += chunk;
         });
-        res.on('end',function(){
+        res.on('end', function () {
             callback(str);
         });
     }).end();
 };
 
-function fetchSharedConnections(id,code,callback){
-       var option = {
-        host:"api.linkedin.com",
+function fetchSharedConnections(id, code, callback) {
+    var option = {
+        host: "api.linkedin.com",
         port: 443,
-        path: "/v1/people/"+id+":(id,first-name,last-name,relation-to-viewer:(connections))",
+        path: "/v1/people/" + id + ":(id,first-name,last-name,relation-to-viewer:(connections))",
         method: "get",
         headers: {
-        'Authorization': 'Bearer '+code,
-         "x-li-format" : "json"
+            'Authorization': 'Bearer ' + code,
+            "x-li-format": "json"
         }
     }
-    http.request(option, function(res){
+    http.request(option, function (res) {
         var str = '';
-        res.on('data', function(chunk){
+        res.on('data', function (chunk) {
             str += chunk;
         });
-        res.on('end',function(){
-            console.log("sharedConnections retrieved for:"+id);
-            callback(id,str);
+        res.on('end', function () {
+            console.log("sharedConnections retrieved for:" + id);
+            callback(id, str);
         });
     }).end();
 }
 
-function isExist(userType,linkedinUser, callback){
-    if(userType=="mentor")
-    {
+function isExist(userType, linkedinUser, callback) {
+    if (userType == "mentor") {
         console.log("find mentor");
         api.findMentor(linkedinUser.id, function (err, result) {
             // user existed, update
