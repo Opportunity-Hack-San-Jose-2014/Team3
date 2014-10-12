@@ -1,7 +1,8 @@
+var http = require("https");
 var express = require('express');
 var router = express.Router();
 var mongoose = require("mongoose");
-var Linkedin = require('node-linkedin')('75rr9d5pcxbxe7', 't7lladYvHYHlbgHh', 'http://butterfly.com:3000/oauth/linkedin/callback');
+var Linkedin = require('node-linkedin')('75rr9d5pcxbxe7', 't7lladYvHYHlbgHh', 'http://localhost:3000/oauth/linkedin/callback');
 var linkedin = Linkedin.init('my_access_token', {
     timeout: 10000 /* 10 seconds */
 });
@@ -37,15 +38,50 @@ router.get('/oauth/linkedin/callback', function(req, res) {
     Linkedin.auth.getAccessToken(res, req.query.code, function(err, results) {
         if ( err )
             return console.error(err);
+        var results = JSON.parse(results);
+         //console.log("3"+results.access_token);
 
-        /**
-         * Results have something like:
-         * {"expires_in":5184000,"access_token":". . . ."}
-         */
-        console.log("+"+results);
-        res.send(results);
-        //return res.redirect('/');
+        req.session.linkdinAccessCode = results.access_token;
+        //fetch(results.access_token);
+        fetch(results.access_token, function(chunk){
+
+        	res.send(JSON.stringify(JSON.parse(chunk)));
+        });
+        //res.redirect('/');
     });
 });
+
+function fetch(code,callback){
+	
+	var option = {
+		host:"api.linkedin.com",
+		port: 443,
+		path: "/v1/people/~:(id,first-name,headline,last-name,industry,skills)",
+		method: "get",
+		headers: {
+        'Authorization': 'Bearer '+code,
+         "x-li-format" : "json"
+    	}
+	}
+	console.log("in fetch");
+	http.request(option, function(res){
+		console.log("in request");
+		res.on('data', function(chunk){
+			console.log("got data");
+			callback(chunk);
+		}).on('error',function(e){
+		   console.log("Error: " + hostNames[i] + "\n" + e.message); 
+		   console.log( e.stack );
+		});	
+	}).end();
+};
+// function isExist(uid, callback){
+// 	if(uid){
+// 		update(get(uid))
+// 	}else{
+// 		insert(uid);
+// 	}
+// 	callback();
+// };
 
 module.exports = router;
