@@ -16,7 +16,10 @@ var skill = new Schema({
 });
 
 var planSchema = new Schema({
-    topic:  String,
+    planName:  String,
+    category: String,
+    age: Number,
+    location: String,
     creator: String,
     date: {type: Date, default: Date.now},
     neededSkills: [skill],

@@ -58,7 +58,10 @@ exports.addMentee = function(jsondata, callback){
 
 exports.addPlan = function(jsondata, callback){
     new Plan({
-        topic: jsondata.topic,
+        planName: jsondata.planName,
+        category: jsondata.category,
+        age: jsondata.age,
+        location: jsondata.location,
         creator: jsondata.creator,
         neededSkills: jsondata.neededSkills
     }).save(function(err, plan){
