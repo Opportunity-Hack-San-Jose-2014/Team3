@@ -6,6 +6,9 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 
+var mongoose = require("mongoose");
+mongoose.connect("mongodb://localhost/butterfly");
+
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
