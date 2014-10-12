@@ -20,6 +20,10 @@ router.get('/dashboard', function (req, res) {
     res.render('dashboard');
 });
 
+router.get('/plan-mentor', function (req, res) {
+    res.render('plan-mentor');
+});
+
 router.get('/plan', function(req, res) {
     req.session.userType = "mentee";
     res.render('business-plan');
