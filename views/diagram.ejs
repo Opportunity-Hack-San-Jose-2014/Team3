@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  
+    <script src="/diagram/jquery.js"></script>
+    <script src="/diagram/arboar.js"></script>
+    <script src="/diagram/graphic.js"></script>
+    <script src="/diagram/renderer.js"></script>
+    
+    <script language="javascript" type="text/javascript">
+      $(document).ready(function(){
+        var sys = arbor.ParticleSystem(1000, 400,1);
+        sys.parameters({gravity:true});
+        sys.renderer = Renderer("#viewport");
+        var data = {
+               nodes:{
+                 animals:{'color':'red','shape':'dot','label':'Jiawei Feng'},
+                 dog:{'color':'green','shape':'dot','label':'dog'},
+                 cat:{'color':'blue','shape':'dot','label':'cat'},
+                 cat1:{'color':'blue','shape':'dot','label':'cat'}
+               }, 
+               edges:{
+                 animals:{ dog:{}, cat:{}, cat1:{} }
+               }
+             };
+            sys.graft(data);  
+      });
+    </script>
+  </head>
+
+  <body>
+    <canvas id="viewport" width="800" height="600"></canvas>
+
+  </body>
+
+</html>

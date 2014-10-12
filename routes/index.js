@@ -89,6 +89,12 @@ router.get('/mentor', function (req, res) {
     res.render('mentor');
 });
 
+router.get('/diagram', function(req, res) {
+    // req.session.userType = "mentor";
+    // api.findMentor(req.session.userId, function());
+    res.render('diagram');
+});
+
 
 // router.get('/login', function(req, res) {
 
