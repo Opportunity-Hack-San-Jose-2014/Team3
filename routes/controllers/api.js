@@ -29,6 +29,7 @@ exports.addMentor = function(jsondata, callback){
     new Mentor({
         _id: jsondata.id,
         url: jsondata.publicProfileUrl,
+        picURL: jsondata.pictureUrl,
         firstName: jsondata.firstName,
         lastName: jsondata.lastName,
         headline: jsondata.headline,
@@ -44,6 +45,7 @@ exports.addMentee = function(jsondata, callback){
     new Mentee({
         _id: jsondata.id,
         url: jsondata.publicProfileUrl,
+        picURL: jsondata.pictureUrl,
         firstName: jsondata.firstName,
         lastName: jsondata.lastName,
         headline: jsondata.headline,
@@ -94,6 +96,18 @@ exports.addPlan = function(jsondata, callback){
         });
 }
 
+
+exports.addDomain = function(jsondata, callback){
+    new Template({
+        _id: jsondata.business,
+        domains: jsondata.domains
+    }).save(function(err){
+            if (err) callback(err);
+            else callback(null, "Domain saved");
+        });
+}
+
+
 exports.updateMentor = function(jsondata, callback){
     Mentor.findById(jsondata.id, function(err, item){
         if (err) callback(err)
@@ -104,6 +118,7 @@ exports.updateMentor = function(jsondata, callback){
         }
         item.update({$set: {
             url: jsondata.publicProfileUrl,
+            picURL: jsondata.pictureUrl,
             firstName: jsondata.firstName,
             lastName: jsondata.lastName,
             headline: jsondata.headline,
@@ -123,6 +138,7 @@ exports.updateMentee = function(jsondata, callback){
 
         item.update({$set: {
             url: jsondata.publicProfileUrl,
+            picURL: jsondata.pictureUrl,
             firstName: jsondata.firstName,
             lastName: jsondata.lastName,
             headline: jsondata.headline,
@@ -140,10 +156,28 @@ exports.confirmPlan = function(jsondata, callback){
         _id : jsondata.plan,
         "neededSkills.mentor": jsondata.mentor
     }, {
-        $set: {"neededSkills.$.confirmed": jsondata.confirmed}
+        $set: {
+            "neededSkills.$.confirmed": jsondata.confirmed,
+            "neededSkills.$.confirmDate": Date.now()
+        }
     }, function(err){
             if (err) callback(err);
-            else callback(null, "Plan updated");
+            else callback(null, "Plan confirmation updated");
+    })
+}
+
+// {plan: id, skill: skill, mentor: id}
+exports.addPlanMentor = function(jsondata, callback) {
+    Plan.findById(jsondata.plan, function (err, item) {
+        item.update({$push: {
+            neededSkills: {
+                skill: jsondata.skill,
+                mentor: jsondata.mentor
+            }
+        }}, function (err) {
+            if (err) callback(err);
+            else callback(null, "Plan mentor added");
+        })
     })
 }
 
@@ -200,4 +234,57 @@ exports.getPlanByMentorId = function(id, callback){
             })
         }
     })
+}
+
+// match skills, return at most n matched mentor
+exports.matchSkills = function(skills, n, callback){
+    Mentor.find({}, function(err, mentors){
+        if (err) callback(err)
+
+        splitSkills = skills.map(function(ele){
+            return ele.toLowerCase().split(" ");
+        })
+
+        async.map(mentors, function(mentor, cb){
+            cb(null, [mentor.id, matchScore(splitSkills, mentor.skills)])
+        }, function(err, scores){
+
+            scores.sort(this.compareScore)
+//            console.log(scores)
+
+            callback(null, scores.slice(0,n).map(function(score){
+                return score[0]
+            }))
+        })
+    })
+}
+
+function matchScore(skills1, skills2) {
+    if (skills1.length == 0 || skills2.length == 0)
+        return 0
+
+    var words2 = skills2.map(function(ele){
+        return ele.toLowerCase().split(" ");
+    }).reduce(function(a,b){
+        return a.concat(b)
+    })
+
+    return skills1.filter(function(words1) {
+
+        for (var i = 0; i < words1.length; i++) {
+            if (words2.indexOf(words1[i]) != -1)
+                return true;
+        }
+        return false;
+
+    }).length;
+}
+
+// [[id, score],[id,score]..]
+exports.compareScore = function(score1, score2) {
+    if (score1[1] < score2[1])
+        return 1;
+    if (score1[1] > score2[1])
+        return -1;
+    return 0;
 }

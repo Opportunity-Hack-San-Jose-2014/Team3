@@ -8,7 +8,9 @@ var mongoose = require('mongoose')
 var skill = new Schema({
     skill: String,
     mentor: String,
-    confirmed: {type: String, default: 'Pending'}
+    confirmed: {type: String, default: 'Pending'},
+    inviteDate: {type: Date, default: Date.now},
+    confirmDate: Date
 }, {
     _id: false
 });

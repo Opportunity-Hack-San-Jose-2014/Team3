@@ -8,6 +8,7 @@ var mongoose = require('mongoose')
 var mentorSchema = new Schema({
     _id: String, //linkedin id
     url: String,
+    picURL: String,
     skills: [String],
     firstName: String,
     lastName: String,
