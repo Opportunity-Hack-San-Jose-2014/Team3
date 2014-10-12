@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var mongoose = require("mongoose");
-var Linkedin = require('node-linkedin')('75rr9d5pcxbxe7', 't7lladYvHYHlbgHh', 'http://54.215.193.137:3000/oauth/linkedin/callback');
+var Linkedin = require('node-linkedin')('75rr9d5pcxbxe7', 't7lladYvHYHlbgHh', 'http://butterfly.com:3000/oauth/linkedin/callback');
 var linkedin = Linkedin.init('my_access_token', {
     timeout: 10000 /* 10 seconds */
 });
