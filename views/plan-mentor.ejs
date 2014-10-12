@@ -118,7 +118,7 @@
                                                     <%for (var i=0; i<mentors[0].length; i++) {%>
                                                     <div class="person-text rel col-lg-4">
                                                         <img src="<%=mentors[0][i].picURL%>"/>
-                                                        <a title="" href="#"><%=mentors[0][i].firstName%> <%=mentors[0][i].lastName%></a>
+                                                        <a title="" target="_blank" href="<%=mentors[0][i].url%>"><%=mentors[0][i].firstName%> <%=mentors[0][i].lastName%></a>
                                                         <div class="col-xs-12 col-sm-12">
 
                                                             <p><%=mentors[0][i].industry%></p>
@@ -128,7 +128,7 @@
                                                                 <span class="tags"><%=mentors[0][i].skills[j]%></span>
                                                                 <% } } %>
                                                             </p>
-                                                            <button type="button" class="btn btn-xs btn-primary btn-radio active">Select</button>
+                                                            <button type="button" class="hide btn btn-xs btn-primary btn-radio active">Select</button>
                                                             <input type="checkbox" id="left-item" class="hidden">
                                                         </div>
                                                     </div>
@@ -155,7 +155,7 @@
                                                             if(i < 3) {%>
                                                     <div class="person-text rel col-lg-4">
                                                         <img src="<%=mentors[1][i].picURL%>"/>
-                                                        <a title="" href="#"><%=mentors[1][i].firstName%> <%=mentors[1][i].lastName%></a>
+                                                        <a title="" target="_blank"  href="<%=mentors[1][i].url%>"><%=mentors[1][i].firstName%> <%=mentors[1][i].lastName%></a>
                                                         <div class="col-xs-12 col-sm-12">
 
                                                             <p><%=mentors[1][i].industry%></p>
@@ -165,7 +165,7 @@
                                                                 <span class="tags"><%=mentors[1][i].skills[j]%></span>
                                                                 <% } } %>
                                                             </p>
-                                                            <button type="button" class="btn btn-xs btn-primary btn-radio active">Select</button>
+                                                            <button type="button" class="hide btn btn-xs btn-primary btn-radio active">Select</button>
                                                             <input type="checkbox" id="left-item" class="hidden">
                                                         </div>
                                                     </div>
@@ -193,7 +193,7 @@
                                                             if(i < 3) {%>
                                                     <div class="person-text rel col-lg-4">
                                                         <img src="<%=mentors[2][i].picURL%>"/>
-                                                        <a title="" href="#"><%=mentors[2][i].firstName%> <%=mentors[2][i].lastName%></a>
+                                                        <a title="" target="_blank" href="<%=mentors[2][i].url%>"><%=mentors[2][i].firstName%> <%=mentors[2][i].lastName%></a>
                                                         <div class="col-xs-12 col-sm-12">
 
                                                             <p><%=mentors[2][i].industry%></p>
@@ -203,7 +203,7 @@
                                                                 <span class="tags"><%=mentors[2][i].skills[j]%></span>
                                                                 <% } } %>
                                                             </p>
-                                                            <button type="button" class="btn btn-xs btn-primary btn-radio active">Select</button>
+                                                            <button type="button" class="hide btn btn-xs btn-primary btn-radio active">Select</button>
                                                             <input type="checkbox" id="left-item" class="hidden">
                                                         </div>
                                                     </div>
@@ -230,7 +230,7 @@
                                                             if(i < 3) {%>
                                                     <div class="person-text rel col-lg-4">
                                                         <img src="<%=mentors[3][i].picURL%>"/>
-                                                        <a title="" href="#"><%=mentors[3][i].firstName%> <%=mentors[3][i].lastName%></a>
+                                                        <a title="" target="_blank" href="<%=mentors[3][i].url%>"><%=mentors[3][i].firstName%> <%=mentors[3][i].lastName%></a>
                                                         <div class="col-xs-12 col-sm-12">
 
                                                             <p><%=mentors[3][i].industry%></p>
@@ -240,7 +240,7 @@
                                                                 <span class="tags"><%=mentors[3][i].skills[j]%></span>
                                                                 <% } } %>
                                                             </p>
-                                                            <button type="button" class="btn btn-xs btn-primary btn-radio active">Select</button>
+                                                            <button type="button" class="hide btn btn-xs btn-primary btn-radio active">Select</button>
                                                             <input type="checkbox" id="left-item" class="hidden">
                                                         </div>
                                                     </div>
@@ -256,7 +256,7 @@
                         <div class="form-group">
                             <div class="col-sm-offset-2 col-sm-10">
                                 <div class="pull-right">
-                                    <a href="/dashboard" type="submit" class="btn btn-primary">Finish</a>
+                                    <a href="/dashboard/<%=userId%>" type="submit" class="btn btn-primary">Finish</a>
                                 </div>
                             </div>
                         </div>

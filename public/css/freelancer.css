@@ -797,6 +797,7 @@ span.tags
     color: #f5f5f5;
     font-weight: bold;
     padding: 2px 4px;
+    padding: 0px 2px !important;
 }
 .dropdown-menu
 {

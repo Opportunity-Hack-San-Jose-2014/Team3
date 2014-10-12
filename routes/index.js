@@ -16,7 +16,7 @@ router.get('/', function (req, res) {
     res.render('index', { title: '11'});
 });
 
-router.get('/dashboard', function (req, res) {
+router.get('/dashboard/:id', function (req, res) {
     //res.render('dashboard');
 
     req.session.userType = "mentee";
@@ -25,11 +25,11 @@ router.get('/dashboard', function (req, res) {
 //        res.render('mentor', {mentee : mentee});
 //    });
 
-    api.getMentee(req.session.userId, function(err, user){
+    api.getMentee(req.params.id, function(err, user){
         if(err)
             console.log(err);
         // res.send(user);
-        res.render('dashboard', {user:user});
+        res.render('dashboard', {user:user._doc});
     });
 });
 
@@ -38,7 +38,7 @@ router.get('/plan-mentor/:id', function (req, res) {
     var skills = [
         ["legal", "law", "laywer", "international"],
         ["bank","banking", "invest", "investment", "money","FINANCIAL", "FINANCe"],
-        ["adv", "advertising", "advertisement"],
+        ["adv", "advertising", "advertisement","management","strategy","logistic"],
         ["php", "java", "Hadoop", "python", "ios","ruby"]
     ];
     //            res.render('plan-mentor', {mentors: [{name: 'Lan Xu', industry: 'it', skills: ['Java','PHP'] }, {name: 'Json Yi', industry: 'it', skills: ['Java','PHP'] },{name: 'Frank Feng', industry: 'it', skills: ['Java','PHP'] }]} );
@@ -49,7 +49,7 @@ router.get('/plan-mentor/:id', function (req, res) {
             callback(null,json);
         })
     }, function (err,jsons) {
-        res.render('plan-mentor', {mentors: jsons});
+        res.render('plan-mentor', {userId: req.params.id ,mentors: jsons});
     });
     //;
 });
@@ -88,7 +88,7 @@ router.post('/plan', function (req, res) {
         if (err) console.log(err)
         console.log(plan)
         //res.render("plan-mentor", {planId : plan});
-        res.redirect("/plan-mentor/"+ plan._id);
+        res.redirect("/plan-mentor/"+ jsondata.creator);
     });
 });
 
