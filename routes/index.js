@@ -16,14 +16,15 @@ router.get('/', function(req, res) {
   res.render('index', { title: '11'});
 });
 
-router.post('/mentor', api.addMentor);
-router.post('/mentee', api.addMentee);
-router.post('/topic', api.addTopic);
-router.post('/mentor/:id', api.updateMentor);
-router.post('/mentee/:id', api.updateMentee);
-router.get('/mentor/:id', api.getMentor);
-router.get('/mentee/:id', api.getMentee);
-router.get('/topic/:id', api.getTopic);
+//router.post('/mentor', api.addMentor);
+//router.post('/mentee', api.addMentee);
+//router.post('/topic', api.addTopic);
+//router.post('/mentor/:id', api.updateMentor);
+//router.post('/mentee/:id', api.updateMentee);
+//router.get('/mentor/:id', api.getMentor);
+//router.get('/mentee/:id', api.getMentee);
+//router.get('/topic/:id', api.getTopic);
+
 
 router.get('/plan', function(req, res) {
   res.render('business-plan');

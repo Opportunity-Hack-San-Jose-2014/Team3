@@ -6,53 +6,57 @@ var Mentee = require('../../models/mentee.js');
 var Topic = require('../../models/topic.js');
 var Template = require('../../models/template.js');
 
-exports.addMentor = function(req, res){
+exports.findMentor = function(id, callback){
+    Mentee.findById(id, function(err, mentee){
+        if (err) callback(err);
+        else callback(null, mentee != null);
+    });
+}
+
+exports.addMentor = function(jsondata, callback){
     new Mentor({
-        _id: req.body.id,
-        url: req.body.url
+        _id: jsondata.id,
+        url: jsondata.url
     }).save(function(err){
-            if (err) console.log(err);
-            else res.send("Mentor saved");
+            if (err) callback(err);
+            else callback(null, "Mentor saved");
         });
 }
 
-exports.addMentee = function(req, res){
+exports.addMentee = function(jsondata, callback){
     new Mentee({
-        _id: req.body.id,
-        url: req.body.url
+        _id: jsondata.id,
+        url: jsondata.url
     }).save(function(err){
-            if (err) console.log(err);
-            else res.send("Mentee saved");
+            if (err) callback(err);
+            else callback(null, "Mentee saved");
         });
 }
 
-exports.addTopic = function(req, res){
-    var skills = JSON.parse(req.body.skills);
+exports.addTopic = function(jsondata, callback){
     new Topic({
-        topic: req.body.topic,
-        creator: req.body.creator,
-        skills: skills
+        topic: jsondata.topic,
+        creator: jsondata.creator,
+        skills: jsondata.skills
     }).save(function(err, topic){
-            if (err) console.log(err);
+            if (err) callback(err);
 
             // update mentee topics
-            Mentee.findById(req.body.creator, function(err, mentee){
+            Mentee.findById(jsondata.creator, function(err, mentee){
                 mentee.update({$push: {topics: topic.id}}, function(err){
-                    if (err) console.log(err);
-                    else console.log(mentee);
+                    if (err) callback(err);
                 })
             });
 
-            skills.forEach(function(skill){
+            jsondata.skills.forEach(function(skill){
                 Mentor.findById(skill.mentor, function(err, mentor){
                     mentor.update({$push: {topicInvitations: topic.id}}, function(err){
-                        if (err) console.log(err);
-                        else console.log(mentor);
+                        if (err) callback(err);
                     })
                 })
             });
 
-            res.send("Topic saved");
+            callback(null, "Topic saved");
 
         });
 }
@@ -70,6 +74,7 @@ exports.updateMentor = function(req, res){
     });
 }
 
+
 exports.updateMentee = function(req, res){
     Mentee.findById(req.params.id, function(err, item){
         item.update({$set: {
@@ -80,6 +85,18 @@ exports.updateMentee = function(req, res){
         })
     });
 }
+
+exports.updateTopic = function(req, res){
+    Topic.findById(req.params.id, function(err, item){
+        item.update({$set: {
+            contact: (req.body.contact ? JSON.parse(req.body.contact) : item.contact)
+        }}, function(err){
+            if (err) console.log(err);
+            else res.send(item);
+        })
+    });
+}
+
 
 exports.getMentor = function(req, res){
     Mentor.findById(req.params.id, function(err, item){
