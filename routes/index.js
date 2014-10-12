@@ -23,12 +23,12 @@ router.get('/dashboard', function (req, res) {
 router.get('/plan-mentor', function (req, res) {
     //var ids=["zFQRactjFi","IyT2spp3n9"];
     var skills = ["php","java","python"];
-    api.matchSkills(skills,20,function(error,mentors){
+    api.matchSkills(skills,20,function(error, mentors){
         console.log("Mentors number: "+mentors.length);
         
-        async.map(mentors, function(id, callback)
+        async.map(mentors, function(mentor, callback)
         {
-            fetchSharedConnections(id,req.session.linkdinAccessCode, function(id,str){
+            fetchSharedConnections(mentor.id,req.session.linkdinAccessCode, function(id,str){
                 var sharedConnections = JSON.parse(str);
                 console.log("RAW: "+JSON.stringify(sharedConnections));
                 if(sharedConnections.status == null && JSON.stringify(sharedConnections.relationToViewer) != "{}")
@@ -36,17 +36,19 @@ router.get('/plan-mentor', function (req, res) {
                     var numOfConnections = sharedConnections.relationToViewer.connections._total;
                     console.log("Shared: "+numOfConnections);
                     console.log("ID: "+id);
-                    callback(null, [id, numOfConnections]);
+                    callback(null, [mentor, numOfConnections]);
                 }
                 else
                 {
-                    callback(null, [id, 0]);
+                    callback(null, [mentor, 0]);
                 }
 
         })}, function(err, results){
             if (err) console.log(err)
             console.log("All: "+JSON.stringify(results));
-            results.sort(api.compareScore);
+            results.sort(api.compareScore).map(function(result){
+                return result[0]
+            });
             console.log(results);
             res.render('plan-mentor');
 

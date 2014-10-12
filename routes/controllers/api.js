@@ -249,7 +249,7 @@ exports.matchSkills = function(skills, n, callback){
         })
 
         async.map(mentors, function(mentor, cb){
-            cb(null, [mentor.id, matchScore(splitSkills, mentor.skills)])
+            cb(null, [mentor, matchScore(splitSkills, mentor.skills)])
         }, function(err, scores){
 
             scores.sort(this.compareScore)
