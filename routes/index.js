@@ -30,8 +30,9 @@ router.get('/plan', function(req, res) {
 });
 router.get('/mentor', function(req, res) {
     req.session.userType = "mentor";
-    res.render('business-plan');
+    res.render('mentor');
 });
+
 
 // router.get('/login', function(req, res) {
   
