@@ -2,7 +2,7 @@ var http = require("https");
 var express = require('express');
 var router = express.Router();
 var async = require('async')
-var Linkedin = require('node-linkedin')('75rr9d5pcxbxe7', 't7lladYvHYHlbgHh', 'http://founderbutterfly.com:3000/oauth/linkedin/callback');
+var Linkedin = require('node-linkedin')('75rr9d5pcxbxe7', 't7lladYvHYHlbgHh', 'http://localhost:3000/oauth/linkedin/callback');
 
 var linkedin = Linkedin.init('my_access_token', {
     timeout: 10000 /* 10 seconds */
@@ -67,13 +67,12 @@ router.post('/plan', function (req, res) {
     req.session.userType = "mentee";
     console.log("userid: " + req.session.userId);
 
-    if(req.session.userId === null) {
+    if(req.session.userId == null || req.session.userId == undefined) {
         res.send('-1');
         return;
     }
 
-    var json =
-    {
+    var json = {
         planName: req.body.name,
         category: req.body.category,
         age: req.body.age,

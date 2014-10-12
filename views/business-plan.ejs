@@ -177,7 +177,7 @@
             <label for="inputPassword">Password</label>
             <input type="password" class="form-control" id="inputPassword">
         </div>
-        <button type="submit" class="btn btn btn-primary pull-right">
+        <span id="error"></span><button type="submit" class="btn btn btn-primary pull-right">
             Log In
         </button>
     </form>
@@ -606,7 +606,10 @@
                 data: $("#frmPlanStep1").serialize(), // serializes the form's elements.
                 success: function(data)
                 {
-                    alert(data); // show response from the php script.
+                    if(data == '-1'){
+                        alert("please login first"); 
+                    }
+                    
                 }
             });
 
