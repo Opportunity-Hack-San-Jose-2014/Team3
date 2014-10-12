@@ -8,13 +8,10 @@ var mongoose = require('mongoose')
 var menteeSchema = new Schema({
     _id: String,
     url: String,
-    contact: {
-        firstName: String,
-        lastName: String,
-        email: String,
-        phone: Number,
-        address: String
-    },
+    firstName: String,
+    lastName: String,
+    headline: String,
+    industry: String,
     topics: [ObjectId]
 });
 

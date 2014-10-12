@@ -6,17 +6,29 @@ var Mentee = require('../../models/mentee.js');
 var Topic = require('../../models/topic.js');
 var Template = require('../../models/template.js');
 
-exports.findMentor = function(id, callback){
+exports.findMentee = function(id, callback){
     Mentee.findById(id, function(err, mentee){
         if (err) callback(err);
         else callback(null, mentee != null);
     });
 }
 
+exports.findMentor = function(id, callback){
+    Mentor.findById(id, function(err, mentor){
+        if (err) callback(err);
+        else callback(null, mentor != null);
+    });
+}
+
 exports.addMentor = function(jsondata, callback){
     new Mentor({
         _id: jsondata.id,
-        url: jsondata.url
+        url: jsondata.publicProfileUrl,
+        firstName: jsondata.firstName,
+        lastName: jsondata.lastName,
+        headline: jsondata.headline,
+        industry: jsondata.industry,
+        skills: jsondata.skills
     }).save(function(err){
             if (err) callback(err);
             else callback(null, "Mentor saved");
@@ -26,7 +38,11 @@ exports.addMentor = function(jsondata, callback){
 exports.addMentee = function(jsondata, callback){
     new Mentee({
         _id: jsondata.id,
-        url: jsondata.url
+        url: jsondata.publicProfileUrl,
+        firstName: jsondata.firstName,
+        lastName: jsondata.lastName,
+        headline: jsondata.headline,
+        industry: jsondata.industry
     }).save(function(err){
             if (err) callback(err);
             else callback(null, "Mentee saved");
@@ -61,57 +77,74 @@ exports.addTopic = function(jsondata, callback){
         });
 }
 
-exports.updateMentor = function(req, res){
-    Mentor.findById(req.params.id, function(err, item){
+exports.updateMentor = function(jsondata, callback){
+    Mentor.findById(jsondata.id, function(err, item){
+        if (err) callback(err)
+
         item.update({$set: {
-            skills: (req.body.skills ? JSON.parse(req.body.skills) : item.skills),
-            contact: (req.body.contact ? JSON.parse(req.body.contact) : item.contact),
-            rating: (req.body.rating ? JSON.parse(req.body.rating) : item.rating)
+            url: jsondata.publicProfileUrl,
+            firstName: jsondata.firstName,
+            lastName: jsondata.lastName,
+            headline: jsondata.headline,
+            industry: jsondata.industry,
+            skills: jsondata.skills
         }}, function(err){
-            if (err) console.log(err);
-            else res.send(item);
+            if (err) callback(err);
+            else callback(null, "Mentor updated");
         })
     });
 }
 
 
-exports.updateMentee = function(req, res){
-    Mentee.findById(req.params.id, function(err, item){
-        item.update({$set: {
-            contact: (req.body.contact ? JSON.parse(req.body.contact) : item.contact)
-        }}, function(err){
-            if (err) console.log(err);
-            else res.send(item);
-        })
-    });
-}
+exports.updateMentee = function(jsondata, callback){
+    Mentee.findById(jsondata.id, function(err, item){
+        if (err) callback(err)
 
-exports.updateTopic = function(req, res){
-    Topic.findById(req.params.id, function(err, item){
         item.update({$set: {
-            contact: (req.body.contact ? JSON.parse(req.body.contact) : item.contact)
+            url: jsondata.publicProfileUrl,
+            firstName: jsondata.firstName,
+            lastName: jsondata.lastName,
+            headline: jsondata.headline,
+            industry: jsondata.industry
         }}, function(err){
-            if (err) console.log(err);
-            else res.send(item);
+            if (err) callback(err);
+            else callback(null, "Mentee updated");
         })
     });
 }
 
 
-exports.getMentor = function(req, res){
-    Mentor.findById(req.params.id, function(err, item){
-        res.send(item);
+exports.updateTopic = function(jsondata, callback){
+    if (err) callback(err)
+
+    Topic.findById(jsondata.id, function(err, item){
+        item.update({$set: {
+            //TODO
+        }}, function(err){
+            if (err) allback(err);
+            else callback(null, "Topic updated");
+        })
     });
 }
 
-exports.getMentee = function(req, res){
-    Mentee.findById(req.params.id, function(err, item){
-        res.send(item);
+
+exports.getMentor = function(id, callback){
+    Mentor.findById(id, function(err, item){
+        if(err) callback(err);
+        else callback(null, item);
     });
 }
 
-exports.getTopic = function(req, res){
-    Topic.findById(req.params.id, function(err, item){
-        res.send(item);
+exports.getMentee = function(id, callback){
+    Mentee.findById(id, function(err, item){
+        if(err) callback(err);
+        else callback(null, item);
+    });
+}
+
+exports.getTopic = function(id, callback){
+    Topic.findById(id, function(err, item){
+        if(err) callback(err);
+        else callback(null, item);
     });
 }

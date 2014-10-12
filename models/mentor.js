@@ -9,13 +9,10 @@ var mentorSchema = new Schema({
     _id: String, //linkedin id
     url: String,
     skills: [String],
-    contact: {
-        firstName: String,
-        lastName: String,
-        email: String,
-        phone: Number,
-        address: String
-    },
+    firstName: String,
+    lastName: String,
+    headline: String,
+    industry: String,
     rate: {
         numberOfRating: Number,
         rating: Number
