@@ -2,7 +2,7 @@ var http = require("https");
 var express = require('express');
 var router = express.Router();
 var async = require('async')
-var Linkedin = require('node-linkedin')('75rr9d5pcxbxe7', 't7lladYvHYHlbgHh', 'http://localhost:3000/oauth/linkedin/callback');
+var Linkedin = require('node-linkedin')('75rr9d5pcxbxe7', 't7lladYvHYHlbgHh', 'http://founderbutterfly.com:3000/oauth/linkedin/callback');
 
 var linkedin = Linkedin.init('my_access_token', {
     timeout: 10000 /* 10 seconds */
@@ -60,7 +60,12 @@ router.get('/plan-mentor', function (req, res) {
 router.get('/plan', function (req, res) {
     req.session.userType = "mentee";
     console.log("userid: " + req.session.userId);
-    res.render('business-plan', {userId: req.session.userId});
+    api.getMentee(req.session.userId, function(err, user){
+        if(err)
+            console.log(err);
+       // res.send(user);
+        res.render('business-plan', {user:user});
+    });
 });
 
 router.post('/plan', function (req, res) {
@@ -72,16 +77,19 @@ router.post('/plan', function (req, res) {
         return;
     }
 
-    var json = {
+    var jsondata = {
         planName: req.body.name,
         category: req.body.category,
         age: req.body.age,
         location: req.body.location,
         creator: req.session.userId,
-        neededSkills: []
+        description: req.body.description,
+        domains: []
     };
 
-    api.addPlan(json, function () {
+    api.addPlan(jsondata, function (err, planid) {
+        if (err) console.log(err)
+        res.render("plan-mentor", {planId : planid});
     });
 });
 

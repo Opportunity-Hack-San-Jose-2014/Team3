@@ -5,8 +5,8 @@
 var mongoose = require('mongoose')
     , Schema = mongoose.Schema;
 
-var skill = new Schema({
-    skill: String,
+var dom = new Schema({
+    dom: String,
     mentor: String,
     confirmed: {type: String, default: 'Pending'},
     inviteDate: {type: Date, default: Date.now},
@@ -20,9 +20,10 @@ var planSchema = new Schema({
     category: String,
     age: Number,
     location: String,
+    description: String,
     creator: String,
     date: {type: Date, default: Date.now},
-    neededSkills: [skill],
+    domains: [dom],
     status: {type: String, default: 'Active'}
 });
 
