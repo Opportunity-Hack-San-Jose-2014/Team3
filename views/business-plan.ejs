@@ -182,7 +182,7 @@
 
 </div>
 <div class="col-lg-8 col-lg-offset-1">
-    <form class="form-horizontal" role="form">
+    <form class="form-horizontal" role="form" id="frmPlanStep1" action="plan" method="post">
         <fieldset>
 
             <!-- Form Name -->
@@ -190,60 +190,49 @@
 
             <!-- Text input-->
             <div class="form-group">
-                <label class="col-sm-2 control-label" for="textinput">Line 1</label>
+                <label class="col-sm-2 control-label" for="textinput">Plan Name</label>
 
                 <div class="col-sm-10">
-                    <input type="text" placeholder="Address Line 1" class="form-control">
+                    <input name="name" type="text" placeholder="Plan Name" class="form-control"  required
+                           data-validation-required-message="Please enter a message.">
                 </div>
             </div>
 
             <!-- Text input-->
             <div class="form-group">
-                <label class="col-sm-2 control-label" for="textinput">Line 2</label>
+                <label class="col-sm-2 control-label" for="textinput">Category</label>
 
                 <div class="col-sm-10">
-                    <input type="text" placeholder="Address Line 2" class="form-control">
+                    <input name="category" type="text" placeholder="Category" class="form-control" required
+                           data-validation-required-message="Please enter a message.">
                 </div>
             </div>
 
             <!-- Text input-->
             <div class="form-group">
-                <label class="col-sm-2 control-label" for="textinput">City</label>
+                <label class="col-sm-2 control-label" for="textinput">Age</label>
 
                 <div class="col-sm-10">
-                    <input type="text" placeholder="City" class="form-control">
+                    <input name="age" type="text" placeholder="Age" class="form-control" required
+                           data-validation-required-message="Please enter a message.">
                 </div>
             </div>
 
             <!-- Text input-->
             <div class="form-group">
-                <label class="col-sm-2 control-label" for="textinput">State</label>
-
-                <div class="col-sm-4">
-                    <input type="text" placeholder="State" class="form-control">
-                </div>
-
-                <label class="col-sm-2 control-label" for="textinput">Postcode</label>
-
-                <div class="col-sm-4">
-                    <input type="text" placeholder="Post Code" class="form-control">
-                </div>
-            </div>
-
-            <!-- Text input-->
-            <div class="form-group">
-                <label class="col-sm-2 control-label" for="textinput">Country</label>
+                <label class="col-sm-2 control-label" for="textinput">Location</label>
 
                 <div class="col-sm-10">
-                    <input type="text" placeholder="Country" class="form-control">
+                    <input name="location" type="text" placeholder="Location" class="form-control" required
+                           data-validation-required-message="Please enter a message.">
                 </div>
             </div>
 
             <div class="form-group ">
-                <label class="col-sm-2 control-label">Message</label>
+                <label class="col-sm-2 control-label">Description</label>
 
                 <div class="col-sm-10">
-                    <textarea rows="5" class="form-control" placeholder="Message" id="message" required
+                    <textarea name="description" rows="5" class="form-control" placeholder="Description" id="message" required
                               data-validation-required-message="Please enter a message."></textarea>
 
                     <p class="help-block text-danger"></p>
@@ -253,7 +242,7 @@
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
                     <div class="pull-right">
-                        <a href="plan-mentor" type="submit" class="btn btn-primary">Next</a>
+                        <button type="submit" class="btn btn-primary">Next</button>
                     </div>
                 </div>
             </div>
@@ -596,10 +585,29 @@
 
 <!-- Contact Form JavaScript -->
 <script src="js/jqBootstrapValidation.js"></script>
-<script src="js/contact_me.js"></script>
+<!--script src="js/contact_me.js"></script-->
 
 <!-- Custom Theme JavaScript -->
 <script src="js/freelancer.js"></script>
+
+<script>
+    $(function(){
+        $("#frmPlanStep1").submit(function() {
+
+            $.ajax({
+                type: "POST",
+                url: "plan",
+                data: $("#frmPlanStep1").serialize(), // serializes the form's elements.
+                success: function(data)
+                {
+                    alert(data); // show response from the php script.
+                }
+            });
+
+            return false; // avoid to execute the actual submit of the form.
+        });
+    });
+</script>
 
 </body>
 
