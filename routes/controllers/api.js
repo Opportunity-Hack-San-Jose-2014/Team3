@@ -63,7 +63,8 @@ exports.addPlan = function(jsondata, callback){
         age: jsondata.age,
         location: jsondata.location,
         creator: jsondata.creator,
-        neededSkills: jsondata.neededSkills
+        description: jsondata.description,
+        domains: jsondata.domains
     }).save(function(err, plan){
             if (err) callback(err);
 
@@ -79,8 +80,8 @@ exports.addPlan = function(jsondata, callback){
                 },
                 function(cb){
                     // update mentor plan invited
-                    async.each(jsondata.neededSkills, function(skill, innercb){
-                        Mentor.findById(skill.mentor, function(err, mentor){
+                    async.each(jsondata.domains, function(dom, innercb){
+                        Mentor.findById(dom.mentor, function(err, mentor){
                             mentor.update({$push: {planInvitations: plan.id}}, function(err){
                                 if (err) innercb(err);
                                 innercb(null);
@@ -91,7 +92,6 @@ exports.addPlan = function(jsondata, callback){
                         else cb(null)
                     });
                 }
-
             ], function(err){
                 if (err) callback(err);
                 else callback(null, plan._id);
@@ -157,11 +157,11 @@ exports.updateMentee = function(jsondata, callback){
 exports.confirmPlan = function(jsondata, callback){
     Plan.update({
         _id : jsondata.plan,
-        "neededSkills.mentor": jsondata.mentor
+        "domains.mentor": jsondata.mentor
     }, {
         $set: {
-            "neededSkills.$.confirmed": jsondata.confirmed,
-            "neededSkills.$.confirmDate": Date.now()
+            "domains.$.confirmed": jsondata.confirmed,
+            "domains.$.confirmDate": Date.now()
         }
     }, function(err){
             if (err) callback(err);
@@ -169,17 +169,24 @@ exports.confirmPlan = function(jsondata, callback){
     })
 }
 
-// {plan: id, skill: skill, mentor: id}
+// {plan: id, dom: dom, mentor: id}
 exports.addPlanMentor = function(jsondata, callback) {
     Plan.findById(jsondata.plan, function (err, item) {
         item.update({$push: {
-            neededSkills: {
-                skill: jsondata.skill,
+            domains: {
+                dom: jsondata.dom,
                 mentor: jsondata.mentor
             }
         }}, function (err) {
             if (err) callback(err);
-            else callback(null, "Plan mentor added");
+
+            // update mentor plan invited
+            Mentor.findById(jsondata.mentor, function (err, mentor) {
+                mentor.update({$push: {planInvitations: jsondata.plan}}, function (err) {
+                    if (err) callback(err);
+                    callback(null, jsondata.plan);
+                });
+            });
         })
     })
 }

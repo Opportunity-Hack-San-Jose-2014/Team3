@@ -30,6 +30,113 @@
     <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+    <style>
+        .block-update-card {
+            height: 100%;
+            border: 1px #FFFFFF solid;
+            width: 380px;
+            float: left;
+            margin-left: 10px;
+            margin-top: 0;
+            padding: 0;
+            box-shadow: 1px 1px 8px #d8d8d8;
+            background-color: #FFFFFF;
+        }
+        .block-update-card .h-status {
+            width: 100%;
+            height: 7px;
+            background: repeating-linear-gradient(45deg, #606dbc, #606dbc 10px, #465298 10px, #465298 20px);
+        }
+        .block-update-card .v-status {
+            width: 5px;
+            height: 80px;
+            float: left;
+            margin-right: 5px;
+            background: repeating-linear-gradient(45deg, #606dbc, #606dbc 10px, #465298 10px, #465298 20px);
+        }
+        .block-update-card .update-card-MDimentions {
+            width: 80px;
+            height: 80px;
+        }
+        .block-update-card .update-card-body {
+            margin-top: 10px;
+            margin-left: 5px;
+        }
+        .block-update-card .update-card-body h4 {
+            color: #737373;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .block-update-card .update-card-body p {
+            color: #737373;
+            font-size: 12px;
+        }
+        .block-update-card .card-action-pellet {
+            padding: 5px;
+        }
+        .block-update-card .card-action-pellet div {
+            margin-right: 10px;
+            font-size: 15px;
+            cursor: pointer;
+            color: #dddddd;
+        }
+        .block-update-card .card-action-pellet div:hover {
+            color: #999999;
+        }
+        .block-update-card .card-bottom-status {
+            color: #a9a9aa;
+            font-weight: bold;
+            font-size: 14px;
+            border-top: #e0e0e0 1px solid;
+            padding-top: 5px;
+            margin: 0px;
+        }
+        .block-update-card .card-bottom-status:hover {
+            background-color: #dd4b39;
+            color: #FFFFFF;
+            cursor: pointer;
+        }
+
+        /*
+        Creating a block for social media buttons
+        */
+        .card-body-social {
+            font-size: 30px;
+            margin-top: 10px;
+        }
+        .card-body-social .git {
+            color: black;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .card-body-social .twitter {
+            color: #19C4FF;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .card-body-social .google-plus {
+            color: #DD4B39;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .card-body-social .facebook {
+            color: #49649F;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .card-body-social .linkedin {
+            color: #007BB6;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .music-card {
+            background-color: green;
+        }
+
+
+    </style>
+
 </head>
 
 <body id="page-top" class="index">
@@ -153,7 +260,7 @@
 <div class="row">
 <div class="well main col-lg-3">
 
-    <%if (userId === undefined) { %>
+    <%if (user == undefined || user == null) { %>
 
     <h5>Please Log In, or <a href="#">Sign Up</a></h5>
 
@@ -177,13 +284,24 @@
             <label for="inputPassword">Password</label>
             <input type="password" class="form-control" id="inputPassword">
         </div>
-        <button type="submit" class="btn btn btn-primary pull-right">
+        <span id="error"></span><button type="submit" class="btn btn btn-primary pull-right">
             Log In
         </button>
     </form>
 
     <% } else {%>
-    UserId: <%=userId%>
+
+    <div>
+        <a class="pull-left" href="#">
+            <img class="media-object update-card-MDimentions" src="<%=user.picURL%>" alt="...">
+        </a>
+        <div style="padding-left: 5px" class="media-body update-card-body">
+            <h4 class="media-heading"><%=user.firstName%> <%=user.lastName%></h4>
+            <div>
+                <div><%=user.headline%></div>
+            </div>
+        </div>
+    </div>
     <%}%>
 
 </div>
@@ -579,22 +697,22 @@
 </div>
 
 <!-- jQuery Version 1.11.0 -->
-<script src="js/jquery-1.11.0.js"></script>
+<script src="/js/jquery-1.11.0.js"></script>
 
 <!-- Bootstrap Core JavaScript -->
-<script src="js/bootstrap.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
 
 <!-- Plugin JavaScript -->
 <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
-<script src="js/classie.js"></script>
-<script src="js/cbpAnimatedHeader.js"></script>
+<script src="/js/classie.js"></script>
+<script src="/js/cbpAnimatedHeader.js"></script>
 
 <!-- Contact Form JavaScript -->
-<script src="js/jqBootstrapValidation.js"></script>
+<script src="/js/jqBootstrapValidation.js"></script>
 <!--script src="js/contact_me.js"></script-->
 
 <!-- Custom Theme JavaScript -->
-<script src="js/freelancer.js"></script>
+<script src="/js/freelancer.js"></script>
 
 <script>
     $(function(){
@@ -606,7 +724,14 @@
                 data: $("#frmPlanStep1").serialize(), // serializes the form's elements.
                 success: function(data)
                 {
-                    alert(data); // show response from the php script.
+                    if(data == '-1'){
+                        alert("please login first");
+                        return false;
+                    }
+
+                    window.location = "/plan-mentor";
+
+                    
                 }
             });
 

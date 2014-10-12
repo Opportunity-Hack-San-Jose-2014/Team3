@@ -44,29 +44,36 @@ router.get('/plan-mentor', function (req, res) {
 router.get('/plan', function (req, res) {
     req.session.userType = "mentee";
     console.log("userid: " + req.session.userId);
-    res.render('business-plan', {userId: req.session.userId});
+    api.getMentee(req.session.userId, function(err, user){
+        if(err)
+            console.log(err);
+       // res.send(user);
+        res.render('business-plan', {user:user});
+    });
 });
 
 router.post('/plan', function (req, res) {
     req.session.userType = "mentee";
     console.log("userid: " + req.session.userId);
 
-    if (req.session.userId === null) {
+    if(req.session.userId == null || req.session.userId == undefined) {
         res.send('-1');
         return;
     }
 
-    var json =
-    {
+    var jsondata = {
         planName: req.body.name,
         category: req.body.category,
         age: req.body.age,
         location: req.body.location,
         creator: req.session.userId,
-        neededSkills: []
+        description: req.body.description,
+        domains: []
     };
 
-    api.addPlan(json, function () {
+    api.addPlan(jsondata, function (err, planid) {
+        if (err) console.log(err)
+        res.render("plan-mentor", {planId : planid});
     });
 });
 
