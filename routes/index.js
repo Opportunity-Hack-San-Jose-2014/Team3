@@ -12,7 +12,7 @@ router.get('/', function(req, res) {
   res.render('index', { title: '11'});
 });
 
-router.get('/start', function(req, res) {
+router.get('/plan', function(req, res) {
   res.render('business-plan');
 });
 
