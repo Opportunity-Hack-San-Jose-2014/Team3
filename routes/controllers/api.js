@@ -21,6 +21,10 @@ exports.findMentor = function(id, callback){
 }
 
 exports.addMentor = function(jsondata, callback){
+    var skills = []
+    for(var i = 0; i < jsondata.skills.values.length; i++){
+        skills.push(jsondata.skills.values[i].skill.name)
+    }
     new Mentor({
         _id: jsondata.id,
         url: jsondata.publicProfileUrl,
@@ -28,7 +32,7 @@ exports.addMentor = function(jsondata, callback){
         lastName: jsondata.lastName,
         headline: jsondata.headline,
         industry: jsondata.industry,
-        skills: jsondata.skills
+        skills: skills
     }).save(function(err){
             if (err) callback(err);
             else callback(null, "Mentor saved");
@@ -81,13 +85,17 @@ exports.updateMentor = function(jsondata, callback){
     Mentor.findById(jsondata.id, function(err, item){
         if (err) callback(err)
 
+        var skills = []
+        for(var i = 0; i < jsondata.skills.values.length; i++){
+            skills.push(jsondata.skills.values[i].skill.name)
+        }
         item.update({$set: {
             url: jsondata.publicProfileUrl,
             firstName: jsondata.firstName,
             lastName: jsondata.lastName,
             headline: jsondata.headline,
             industry: jsondata.industry,
-            skills: jsondata.skills
+            skills: skills
         }}, function(err){
             if (err) callback(err);
             else callback(null, "Mentor updated");
