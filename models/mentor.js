@@ -17,7 +17,7 @@ var mentorSchema = new Schema({
         numberOfRating: Number,
         rating: Number
     },
-    topicInvitations: [{type: ObjectId, ref: "Topic"}]
+    planInvitations: [ObjectId]
 });
 
 module.exports = mongoose.model('Mentor', mentorSchema);

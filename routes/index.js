@@ -2,7 +2,6 @@ var http = require("https");
 var express = require('express');
 var router = express.Router();
 
-var mongoose = require("mongoose");
 var Linkedin = require('node-linkedin')('75rr9d5pcxbxe7', 't7lladYvHYHlbgHh', 'http://founderbutterfly.com:3000/oauth/linkedin/callback');
 
 var linkedin = Linkedin.init('my_access_token', {

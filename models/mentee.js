@@ -12,7 +12,7 @@ var menteeSchema = new Schema({
     lastName: String,
     headline: String,
     industry: String,
-    topics: [ObjectId]
+    plans: [ObjectId]
 });
 
 module.exports = mongoose.model('Mentee', menteeSchema);

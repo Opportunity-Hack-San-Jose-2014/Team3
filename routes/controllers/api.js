@@ -3,8 +3,9 @@
  */
 var Mentor = require('../../models/mentor.js');
 var Mentee = require('../../models/mentee.js');
-var Topic = require('../../models/topic.js');
+var Plan = require('../../models/plan.js');
 var Template = require('../../models/template.js');
+var async = require('async');
 
 exports.findMentee = function(id, callback){
     Mentee.findById(id, function(err, mentee){
@@ -53,31 +54,43 @@ exports.addMentee = function(jsondata, callback){
         });
 }
 
-exports.addTopic = function(jsondata, callback){
-    new Topic({
+exports.addPlan = function(jsondata, callback){
+    new Plan({
         topic: jsondata.topic,
         creator: jsondata.creator,
-        skills: jsondata.skills
-    }).save(function(err, topic){
+        neededSkills: jsondata.neededSkills
+    }).save(function(err, plan){
             if (err) callback(err);
 
-            // update mentee topics
-            Mentee.findById(jsondata.creator, function(err, mentee){
-                mentee.update({$push: {topics: topic.id}}, function(err){
-                    if (err) callback(err);
-                })
-            });
+            async.parallel([
+                function(cb){
+                    // update mentee plans
+                    Mentee.findById(jsondata.creator, function(err, mentee){
+                        mentee.update({$push: {plans: plan.id}}, function(err){
+                            if (err) cb(err);
+                            else cb(null);
+                        })
+                    });
+                },
+                function(cb){
+                    // update mentor plan invited
+                    async.each(jsondata.neededSkills, function(skill, innercb){
+                        Mentor.findById(skill.mentor, function(err, mentor){
+                            mentor.update({$push: {planInvitations: plan.id}}, function(err){
+                                if (err) innercb(err);
+                                innercb(null);
+                            })
+                        })
+                    }, function(err){
+                        if (err) cb(err);
+                        else cb(null)
+                    });
+                }
 
-            jsondata.skills.forEach(function(skill){
-                Mentor.findById(skill.mentor, function(err, mentor){
-                    mentor.update({$push: {topicInvitations: topic.id}}, function(err){
-                        if (err) callback(err);
-                    })
-                })
-            });
-
-            callback(null, "Topic saved");
-
+            ], function(err){
+                if (err) callback(err);
+                else callback(null, "Plan saved");
+            })
         });
 }
 
@@ -121,18 +134,17 @@ exports.updateMentee = function(jsondata, callback){
     });
 }
 
-
-exports.updateTopic = function(jsondata, callback){
-    if (err) callback(err)
-
-    Topic.findById(jsondata.id, function(err, item){
-        item.update({$set: {
-            //TODO
-        }}, function(err){
-            if (err) allback(err);
-            else callback(null, "Topic updated");
-        })
-    });
+// {plan: id, mentor: id, confirmed: Accepted/Rejected}
+exports.confirmPlan = function(jsondata, callback){
+    Plan.update({
+        _id : jsondata.plan,
+        "neededSkills.mentor": jsondata.mentor
+    }, {
+        $set: {"neededSkills.$.confirmed": jsondata.confirmed}
+    }, function(err){
+            if (err) callback(err);
+            else callback(null, "Plan updated");
+    })
 }
 
 
@@ -150,9 +162,42 @@ exports.getMentee = function(id, callback){
     });
 }
 
-exports.getTopic = function(id, callback){
-    Topic.findById(id, function(err, item){
+exports.getPlan = function(id, callback){
+    Plan.findById(id, function(err, item){
         if(err) callback(err);
         else callback(null, item);
     });
+}
+
+// pass mentee id
+exports.getPlanByMenteeId = function(id, callback){
+    Mentee.findById(id, function(err, mentee){
+        async.map(mentee.plans, function(planId, cb){
+            Plan.findById(planId, function(err, plan){
+                if (err) cb(err)
+                else cb(null, plan)
+            })
+        }, function(err, plans){
+            if (err) callback(err)
+            else callback(null, plans)
+        })
+    })
+}
+
+// pass mentor id
+exports.getPlanByMentorId = function(id, callback){
+    Mentor.findById(id, function(err, mentor){
+        if (err) callback(err)
+        else {
+            async.map(mentor.planInvitations, function(planId, cb){
+                Plan.findById(planId, function(err, plan){
+                    if (err) cb(err)
+                    else cb(null, plan)
+                })
+            }, function(err, plans){
+                if (err) callback(err)
+                else callback(null, plans)
+            })
+        }
+    })
 }

@@ -8,17 +8,17 @@ var mongoose = require('mongoose')
 var skill = new Schema({
     skill: String,
     mentor: String,
-    matched: {type: String, default: 'Pending'}
+    confirmed: {type: String, default: 'Pending'}
 }, {
     _id: false
 });
 
-var topicSchema = new Schema({
+var planSchema = new Schema({
     topic:  String,
     creator: String,
     date: {type: Date, default: Date.now},
-    skills: [skill],
+    neededSkills: [skill],
     status: {type: String, default: 'Active'}
 });
 
-module.exports = mongoose.model('Topic', topicSchema);
+module.exports = mongoose.model('Plan', planSchema);
