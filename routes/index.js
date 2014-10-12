@@ -79,7 +79,17 @@ router.post('/plan', function (req, res) {
 
 router.get('/mentor', function (req, res) {
     req.session.userType = "mentor";
-    res.render('mentor');
+   // console.log("1111"+req.session.user.userId);
+//    api.findMentee(req.session.user.userId,function(err, mentee){
+//        res.render('mentor', {mentee : mentee});
+//    });
+
+    api.getMentor(req.session.userId, function(err, user){
+        if(err)
+            console.log(err);
+        // res.send(user);
+        res.render('mentor', {user:user});
+    });
 });
 
 router.get('/diagram', function (req, res) {
@@ -119,11 +129,13 @@ router.get('/oauth/linkedin/callback', function (req, res) {
 
             console.log(req.session.userId);
             isExist(req.session.userType, linkedinUser, function (result) {
-                if (req.session.userType == "mentor") {
-                    res.redirect('/mentor');
+
+                //res.redirect('/');
+                if (req.session.userType == "mentee") {
+                    res.redirect('/plan');
                 }
                 else {
-                    res.redirect("/plan");
+                    res.redirect("/mentor");
                 }
                 //linkedinID will be returned on update and create
                 req.session.userId = result;
