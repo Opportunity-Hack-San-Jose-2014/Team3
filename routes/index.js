@@ -2,7 +2,7 @@ var http = require("https");
 var express = require('express');
 var router = express.Router();
 var async = require('async')
-var Linkedin = require('node-linkedin')('75rr9d5pcxbxe7', 't7lladYvHYHlbgHh', 'http://founderbutterfly.com:3000/oauth/linkedin/callback');
+var Linkedin = require('node-linkedin')('75rr9d5pcxbxe7', 't7lladYvHYHlbgHh', 'http://founderbutterfly.com/oauth/linkedin/callback');
 
 var linkedin = Linkedin.init('my_access_token', {
     timeout: 10000 /* 10 seconds */
